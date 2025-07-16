@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.throwit.app.mapper.NotificationMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="NotificationResultMap" type="com.throwit.app.model.Notification">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="activity_id" property="activityId"/>
+        <result column="content" property="content"/>
+        <result column="trigger_reason" property="triggerReason"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 基础查询字段 -->
+    <sql id="Base_Column_List">
+        id, user_id, activity_id, content, trigger_reason, created_at
+    </sql>
+
+    <!-- 插入提醒记录 -->
+    <insert id="insert" parameterType="com.throwit.app.model.Notification" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO notifications (
+            user_id, activity_id, content, trigger_reason, created_at
+        ) VALUES (
+            #{userId}, #{activityId}, #{content}, #{triggerReason}, #{createdAt}
+        )
+    </insert>
+
+    <!-- 根据用户ID查询提醒记录列表 -->
+    <select id="findByUserId" resultMap="NotificationResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM notifications
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+
+    <!-- 根据用户ID和时间范围查询提醒记录 -->
+    <select id="findByUserIdAndTimeRange" resultMap="NotificationResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM notifications
+        WHERE user_id = #{userId}
+          AND created_at BETWEEN #{startTime} AND #{endTime}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 统计用户提醒次数 -->
+    <select id="countByUserId" resultType="long">
+        SELECT COUNT(*)
+        FROM notifications
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 删除用户的提醒记录 -->
+    <delete id="deleteByUserId">
+        DELETE FROM notifications
+        WHERE user_id = #{userId}
+    </delete>
+
+</mapper>

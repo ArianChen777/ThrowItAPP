@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.throwit.app.mapper.ActivityMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="ActivityResultMap" type="com.throwit.app.model.Activity">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="activity_type" property="activityType"/>
+        <result column="app_name" property="appName"/>
+        <result column="activity_detail" property="activityDetail"/>
+        <result column="capture_time" property="captureTime"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <!-- 活动类型统计结果映射 -->
+    <resultMap id="ActivityTypeStatResultMap" type="com.throwit.app.mapper.ActivityMapper$ActivityTypeStat">
+        <result column="activity_type" property="activityType"/>
+        <result column="count" property="count"/>
+    </resultMap>
+
+    <!-- 基础查询字段 -->
+    <sql id="Base_Column_List">
+        id, user_id, activity_type, app_name, activity_detail, capture_time, created_at
+    </sql>
+
+    <!-- 插入活动记录 -->
+    <insert id="insert" parameterType="com.throwit.app.model.Activity" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO activities (
+            user_id, activity_type, app_name, activity_detail, capture_time, created_at
+        ) VALUES (
+            #{userId}, #{activityType}, #{appName}, #{activityDetail}, #{captureTime}, #{createdAt}
+        )
+    </insert>
+
+    <!-- 根据用户ID和时间范围查询活动记录 -->
+    <select id="findByUserIdAndTimeRange" resultMap="ActivityResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM activities
+        WHERE user_id = #{userId}
+          AND capture_time BETWEEN #{startTime} AND #{endTime}
+        ORDER BY capture_time DESC
+    </select>
+
+    <!-- 查询用户今日活动记录 -->
+    <select id="findTodayActivitiesByUserId" resultMap="ActivityResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM activities
+        WHERE user_id = #{userId}
+          AND DATE(capture_time) = CURDATE()
+        ORDER BY capture_time DESC
+    </select>
+
+    <!-- 查询用户最近的连续娱乐活动 -->
+    <select id="findRecentEntertainmentActivities" resultMap="ActivityResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM activities
+        WHERE user_id = #{userId}
+          AND activity_type = 'entertainment'
+          AND capture_time >= DATE_SUB(NOW(), INTERVAL #{lookbackMinutes} MINUTE)
+        ORDER BY capture_time DESC
+    </select>
+
+    <!-- 统计用户指定时间范围内各类型活动的数量 -->
+    <select id="countActivitiesByType" resultMap="ActivityTypeStatResultMap">
+        SELECT 
+            activity_type,
+            COUNT(*) as count
+        FROM activities
+        WHERE user_id = #{userId}
+          AND capture_time BETWEEN #{startTime} AND #{endTime}
+        GROUP BY activity_type
+        ORDER BY count DESC
+    </select>
+
+</mapper>

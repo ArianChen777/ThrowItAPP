@@ -1,0 +1,41 @@
+# 生产环境配置
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:throwit}?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:throwit}
+    password: ${DB_PASSWORD}
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 50
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+
+# 生产环境日志配置
+logging:
+  level:
+    root: WARN
+    com.throwit.app: INFO
+    org.springframework.security: WARN
+  file:
+    name: /app/logs/throwit-server.log
+
+# 生产环境AI服务配置
+app:
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY} # 必须通过环境变量设置
+  
+  # JWT密钥（生产环境必须设置）
+  jwt:
+    secret: ${JWT_SECRET} # 必须通过环境变量设置，至少32位字符
+
+# 监控配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never

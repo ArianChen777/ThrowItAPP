@@ -1,0 +1,121 @@
+server:
+  port: 8090
+  servlet:
+    context-path: /
+  tomcat:
+    uri-encoding: UTF-8
+    max-file-size: 10MB
+    max-request-size: 10MB
+
+spring:
+  application:
+    name: throwit-server-dev
+  
+  # 数据源配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/throwit_dev?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+  
+  # 文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      enabled: true
+  
+  # JSON配置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+# MyBatis配置
+mybatis:
+  mapper-locations: classpath:mappers/*.xml
+  type-aliases-package: com.throwit.app.model
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+    lazy-loading-enabled: true
+    multiple-result-sets-enabled: true
+    use-column-label: true
+    use-generated-keys: true
+    auto-mapping-behavior: partial
+    default-executor-type: simple
+    default-statement-timeout: 25
+    default-fetch-size: 100
+    safe-row-bounds-enabled: false
+    local-cache-scope: session
+    jdbc-type-for-null: other
+    lazy-load-trigger-methods: equals,clone,hashCode,toString
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+# 应用配置
+app:
+  # JWT配置
+  jwt:
+    secret: ${JWT_SECRET:}
+    expiration: 86400 # 24小时，单位：秒
+  
+  # AI服务配置
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      model: gpt-4o
+      url: ${OPENAI_URL:https://api.openai.com/v1/chat/completions}
+  
+  # 业务配置
+  business:
+    # 默认提醒设置
+    default-reminder:
+      continuous-entertainment-limit: 30 # 默认30分钟
+      reminder-content: "亲爱的，你已经娱乐一段时间了，是不是该休息一下或者做点其他事情呢？"
+    
+    # 截图分析间隔
+    screenshot-interval: 600 # 10分钟，单位：秒
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.throwit.app: DEBUG
+    com.throwit.app.mapper: DEBUG
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+  file:
+    name: logs/throwit-server.log
+    max-size: 10MB
+    max-history: 7
+
+# 监控配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+  info:
+    env:
+      enabled: true
+
+# 应用信息
+info:
+  app:
+    name: ThrowIt Server Dev
+    description: AI-powered productivity tool backend service (Development)
+    version: 1.0.0-dev
+    author: ThrowIt Team
