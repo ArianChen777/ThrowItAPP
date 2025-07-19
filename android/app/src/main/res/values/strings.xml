@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ThrowIt</string>
+    <string name="subtitle">娱乐防沉迷管控助手</string>
+    <string name="main_title">ThrowIt</string>
+    <string name="main_subtitle">抵制手机诱惑，当提醒响起，请扔掉📱</string>
+    <string name="scheduled_monitoring">定时监控</string>
+    <string name="monitoring_enabled">监控已开启</string>
+    <string name="last_check">上次检查</string>
+    <string name="today_reminders">今日提醒</string>
+    <string name="times_unit">次</string>
+    <string name="app_whitelist">应用白名单</string>
+    <string name="manage_monitoring_apps">管理监控应用</string>
+    <string name="settings_center">设置中心</string>
+    <string name="personalized_config">个性化配置</string>
+    <string name="usage_statistics">使用统计</string>
+    <string name="view_detailed_charts">查看详细的图表记录和AI分析结果</string>
+    <string name="records_unit">条记录</string>
+    <string name="current_status">当前状态</string>
+    <string name="protecting">正在守护</string>
+</resources>
